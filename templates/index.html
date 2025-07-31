@@ -1,0 +1,64 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .chat-container { max-width: 600px; margin: 40px auto; border: 1px solid #ddd; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .chat-box { height: 400px; padding: 15px; overflow-y: scroll; border-bottom: 1px solid #ddd; }
+        .chat-input { display: flex; padding: 10px; }
+        .chat-input input { flex-grow: 1; border: 1px solid #ccc; padding: 8px; border-radius: 4px; }
+        .chat-input button { background-color: #007bff; color: white; border: none; padding: 9px 15px; margin-left: 10px; border-radius: 4px; cursor: pointer; }
+        .user-msg, .bot-msg { margin: 10px 0; padding: 8px 12px; border-radius: 10px; max-width: 80%; }
+        .user-msg { background-color: #007bff; color: white; margin-left: auto; }
+        .bot-msg { background-color: #e9e9eb; color: black; margin-right: auto; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox">
+            <div class="bot-msg"><p>Hello! I'm your personal assistant. How can I help you today?</p></div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function sendMessage() {
+                var userInput = $("#userInput").val();
+                if (userInput.trim() === "") return;
+
+                // Display user's message
+                $("#chatBox").append('<div class="user-msg"><p>' + userInput + '</p></div>');
+                $("#userInput").val("");
+
+                // Send message to Flask server
+                $.ajax({
+                    url: "/get",
+                    type: "post",
+                    data: { msg: userInput },
+                    success: function(data) {
+                        $("#chatBox").append('<div class="bot-msg"><p>' + data.response + '</p></div>');
+                        // Scroll to the bottom
+                        $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+                    }
+                });
+            }
+
+            $("#sendBtn").click(sendMessage);
+
+            $("#userInput").keypress(function(e) {
+                if (e.which == 13) { // Enter key
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
