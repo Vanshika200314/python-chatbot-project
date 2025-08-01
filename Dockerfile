@@ -16,5 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . .
 
-# The command to run the app will be taken from the Procfile / Render Start Command
-# No CMD or EXPOSE needed here for Render
+# NEW AND FINAL LINE: The command to run the web server
+CMD ["gunicorn", "--workers", "1", "--threads", "1", "--timeout", "120", "app:app"]
